@@ -183,7 +183,7 @@ const userController = {
     }
   },
   getUsertByIdOrNickName: async (ctx: Context, next: Next) => {
-    const { id, nickname } = ctx.request.body;
+    const { id, nickname } = ctx.request.query;
     if (!id && !nickname) {
       ctx.body = MyResponse.error("用户id和用户名不能都为空");
       return;

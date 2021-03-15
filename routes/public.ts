@@ -20,6 +20,6 @@ router.post('/api/user/modifyUser', userController.modifyUser);
 
 router.post('/api/user/modifyAvatar', userController.modifyAvatar);
 
-router.post('/api/user/getUserByIdOrNickName', userController.getUsertByIdOrNickName);
+router.get('/api/user/getUserByIdOrNickName', userController.getUsertByIdOrNickName);
 
 module.exports = router.routes();
