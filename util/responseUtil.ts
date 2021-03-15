@@ -3,9 +3,9 @@ import { ResultVO } from '../vo/ResultVO';
 
 export enum ResStatusCode {
   SUCCESS = 200,
-  ERROR = 401,
-  NOAUTH = 400,
-  PARAMWRONG = 401
+  ERROR = 400,
+  NOAUTH = 401,
+  PARAMWRONG = 400,
 }
 
 export class MyResponse {

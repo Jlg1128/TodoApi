@@ -14,7 +14,6 @@ export enum RepeatType {
 const userController = {
   login: async (ctx: Context, next: Next) => {
     let { nickname, password } = ctx.request.body;
-    console.log(ctx.session);
     password = password.toString();
     if (nickname == null || password == null) {
       ctx.body = MyResponse.paramWrong("参数缺失");
