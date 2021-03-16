@@ -189,8 +189,28 @@ const userController = {
       ctx.body = MyResponse.error("");
     }
   },
-   // 用户名是否重复
-  getUserByNickname: async (ctx: Context, next: Next) => {
+  // 用户名是否已经存在
+  isUserAlreatExit: async (ctx: Context, next: Next) => {
+    let { nickname } = ctx.request.query;
+    if (nickname == null) {
+      ctx.body = MyResponse.paramWrong("用户名不能为空");
+      return;
+    }
+    try {
+      let user: User = null;
+      user = await userService.getUserByNickname(nickname.toString());
+      if (user != null) {
+        ctx.body = MyResponse.error("用户已存在");
+      } else {
+        ctx.body = MyResponse.success(null);
+      }
+    } catch (error) {
+      ctx.log.error(error);
+      ctx.body = MyResponse.error("");
+    }
+  },
+  // 用户名是否已经存在
+  isUserExit: async (ctx: Context, next: Next) => {
     let { nickname } = ctx.request.query;
     if (nickname == null) {
       ctx.body = MyResponse.paramWrong("用户名不能为空");
@@ -200,10 +220,9 @@ const userController = {
       let user: User = null;
       user = await userService.getUserByNickname(nickname.toString());
       if (user == null) {
-        ctx.body = MyResponse.success(null, "用户不存在");
+        ctx.body = MyResponse.error("用户不存在");
       } else {
-        delete user.password;
-        ctx.body = MyResponse.success(user);
+        ctx.body = MyResponse.success(null);
       }
     } catch (error) {
       ctx.log.error(error);

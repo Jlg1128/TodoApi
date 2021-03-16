@@ -21,6 +21,8 @@ const allowPath = [
   '/api/user/register',
   '/api/user/nickNameRepeat',
   '/api/user/getUserByNickname',
+  '/api/user/isUserAlreatExit',
+  '/api/user/isUserExit',
 ];
 // 日志中间件
 const logUtilMiddleWares = Log({

@@ -24,6 +24,8 @@ router.post('/api/user/modifyAvatar', userController.modifyAvatar);
 
 router.get('/api/user/getUserById', userController.getUserById);
 
-router.get('/api/user/getUserByNickname', userController.getUserByNickname);
+router.get('/api/user/isUserAlreatExit', userController.isUserAlreatExit);
+
+router.get('/api/user/isUserExit', userController.isUserExit);
 
 module.exports = router.routes();
