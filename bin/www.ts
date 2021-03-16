@@ -5,14 +5,6 @@ import Log from '../middlewares/log/logger';
 import md5Util from '../util/md5Util';
 import { MyResponse } from '../util/responseUtil';
 
-const allowPath = [
-  '/api/user/login',
-  '/api/user/getUserByIdOrNickName',
-  '/api/user/register',
-  '/api/user/nickNameRepeat',
-  '/api/user/getUserByIdOrNickName',
-];
-
 const Koa_Session = require('koa-session');
 
 const bodyParser = require('koa-bodyparser');
@@ -23,6 +15,13 @@ const { port, host } = config;
 
 const ip = `${host}:${port}`;
 
+const allowPath = [
+  '/api/user/login',
+  '/api/user/getUserByIdOrNickName',
+  '/api/user/register',
+  '/api/user/nickNameRepeat',
+  '/api/user/getUserByIdOrNickName',
+];
 // 日志中间件
 const logUtilMiddleWares = Log({
   env: process.env.NODE_ENV, // koa 提供的环境变量
@@ -44,7 +43,7 @@ app.keys = ['jlgTodoooooo'];
 
 const CONFIG = {
   key: 'login_status', // cookie key (default is koa:sess)
-  maxAge: 72576000000, // cookie的过期时间 maxAge in ms (default is 1 days)
+  maxAge: 14 * 86400 * 1000, // cookie的过期时间 maxAge in ms (default is 1 days)
   overwrite: true, // 是否可以overwrite    (默认default true)
   httpOnly: true, // cookie是否只有服务器端可以访问 httpOnly or not (default true)
   signed: true, // 签名默认true
