@@ -10,7 +10,7 @@ router.post('/api/user/register', userController.register);
 
 router.post('/api/user/quit', userController.quit);
 
-router.get('/api/user/nickNameRepeat', userController.nicknameIfRepeat);
+router.get('/api/user/userInfoIfRepeat', userController.userInfoIfRepeat);
 
 router.get('/api/todo/getTodoListById', todoController.getTodoListById);
 
@@ -22,6 +22,8 @@ router.post('/api/user/modifyUser', userController.modifyUser);
 
 router.post('/api/user/modifyAvatar', userController.modifyAvatar);
 
-router.get('/api/user/getUserByIdOrNickName', userController.getUsertByIdOrNickName);
+router.get('/api/user/getUserById', userController.getUserById);
+
+router.get('/api/user/getUserByNickname', userController.getUserByNickname);
 
 module.exports = router.routes();

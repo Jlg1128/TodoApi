@@ -3,13 +3,6 @@ import userService from '../service/userService';
 import { MyResponse } from '../util/responseUtil';
 import { User } from '../domain/user';
 
-export enum RepeatType {
-  USERNAME = 'username',
-  EMAIL = 'eamil',
-  PHONE = 'phone',
-  ID = 'id',
-}
-
 // 用户相关
 const userController = {
   login: async (ctx: Context, next: Next) => {
@@ -34,6 +27,7 @@ const userController = {
       }
       delete user.password;
       ctx.session.logged = true;
+      ctx.session.id = user.id;
       ctx.body = MyResponse.success(user, "执行成功");
     } catch (error) {
       ctx.log.error(error);
@@ -84,19 +78,24 @@ const userController = {
         todo_list,
       };
       await userService.insertUser(user);
-      let findUser = await userService.getUserByNickname(nickname);
-      delete findUser.password;
-      ctx.body = MyResponse.success(findUser, "注册成功");
+      let createdUser = await userService.getUserByNickname(nickname);
+      delete createdUser.password;
+      ctx.body = MyResponse.success(createdUser, "注册成功");
+      ctx.session.id = createdUser.id;
+      ctx.session.logged = true;
     } catch (error) {
+      ctx.session.logged = false;
+      ctx.session.id = null;
       ctx.log.error(error);
       ctx.body = MyResponse.error("异常错误");
     }
   },
   quit: async (ctx: Context, next: Next) => {
     ctx.session.logged = false;
+    ctx.session.id = null;
     ctx.body = MyResponse.success("退出成功");
   },
-  nicknameIfRepeat: async (ctx: Context, next: Next) => {
+  userInfoIfRepeat: async (ctx: Context, next: Next) => {
     let { type, value } = ctx.request.query;
     if (!type || !value) {
       ctx.body = MyResponse.error("请求类型或者值不能为空");
@@ -118,27 +117,23 @@ const userController = {
         user = await userService.getUserByPhoneNumber(value.toString());
       }
       if (type === 'id') {
-        user = await userService.getUserById(Number(value.toString()));
+        let { id } = ctx.session;
+        user = await userService.getUserById(id);
       }
     } catch (error) {
       ctx.log.error(error);
       ctx.body = MyResponse.error(error);
     }
-    // @ts-ignore
     ctx.body = !user ? MyResponse.success(null) : MyResponse.error(`${type}已存在`);
   },
   modifyUser: async (ctx: Context, next: Next) => {
-    const { id, nickname, email, phone_number, avatar } = ctx.request.body;
-    if (!id) {
-      ctx.body = MyResponse.error("id不能为空");
-      return;
-    }
+    const { nickname, email, phone_number, avatar } = ctx.request.body;
+    let { id } = ctx.session;
     let user: User = await userService.getUserById(id);
     if (!user) {
       ctx.body = MyResponse.error("用户不存在");
       return;
     }
-
     try {
       let res = await userService.modifyUser(id, {
         nickname: nickname || user.nickname,
@@ -156,11 +151,8 @@ const userController = {
     }
   },
   modifyAvatar: async (ctx: Context, next: Next) => {
-    const { id, avatar } = ctx.request.body;
-    if (!id) {
-      ctx.body = MyResponse.error("id不能为空");
-      return;
-    }
+    const { avatar } = ctx.request.body;
+    let { id } = ctx.session;
     let user: User = await userService.getUserById(id);
     if (!user) {
       ctx.body = MyResponse.error("用户不存在");
@@ -181,23 +173,41 @@ const userController = {
       ctx.body = MyResponse.error(error);
     }
   },
-  getUsertByIdOrNickName: async (ctx: Context, next: Next) => {
-    const { id, nickname } = ctx.request.query;
-    if (!id && !nickname) {
-      ctx.body = MyResponse.error("用户id和用户名不能都为空");
+  getUserById: async (ctx: Context, next: Next) => {
+    let { id } = ctx.session;
+    try {
+      let user: User = null;
+      user = await userService.getUserById(id);
+      if (user == null) {
+        ctx.body = MyResponse.success("用户不存在");
+      } else {
+        delete user.password;
+        ctx.body = MyResponse.success(user);
+      }
+    } catch (error) {
+      ctx.log.error(error);
+      ctx.body = MyResponse.error("");
+    }
+  },
+   // 用户名是否重复
+  getUserByNickname: async (ctx: Context, next: Next) => {
+    let { nickname } = ctx.request.query;
+    if (nickname == null) {
+      ctx.body = MyResponse.paramWrong("用户名不能为空");
       return;
     }
     try {
-      let user = null;
-      if (id) {
-        user = await userService.getUserById(Number(id));
+      let user: User = null;
+      user = await userService.getUserByNickname(nickname.toString());
+      if (user == null) {
+        ctx.body = MyResponse.success(null, "用户不存在");
       } else {
-        user = await userService.getUserByNickname(nickname.toString());
+        delete user.password;
+        ctx.body = MyResponse.success(user);
       }
-      ctx.body = MyResponse.success(user);
     } catch (error) {
       ctx.log.error(error);
-      ctx.body = MyResponse.error(error);
+      ctx.body = MyResponse.error("");
     }
   },
 };

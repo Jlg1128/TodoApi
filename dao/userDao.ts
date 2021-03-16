@@ -53,14 +53,12 @@ export default {
       phone_number: partialUser.phone,
       avatar: partialUser.avatar,
     }, id);
-    console.log('ifSuccess', ifSuccess);
     return ifSuccess;
   },
   modifyAvatar: async (id: number, avatar): Promise<string> => {
     let ifSuccess: string = await Userdb.update({
       avatar,
     }, id);
-    console.log('ifSuccess', ifSuccess);
     return ifSuccess;
   },
 };

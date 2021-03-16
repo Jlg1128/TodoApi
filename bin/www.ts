@@ -20,7 +20,7 @@ const allowPath = [
   '/api/user/getUserByIdOrNickName',
   '/api/user/register',
   '/api/user/nickNameRepeat',
-  '/api/user/getUserByIdOrNickName',
+  '/api/user/getUserByNickname',
 ];
 // 日志中间件
 const logUtilMiddleWares = Log({
@@ -60,7 +60,7 @@ app.use(md5Util);
 app.use(bodyParser());
 
 app.use(async (ctx: Koa.Context, next: Koa.Next) => {
-  if (!allowPath.includes(ctx.path) && !ctx.session.logged) { // 如果登录属性为undefined或者false，对应未登录和登录失败
+  if (!allowPath.includes(ctx.path) && !ctx.session.logged && !ctx.session.id) { // 如果登录属性为undefined或者false，对应未登录和登录失败
     ctx.session.logged = false;
     ctx.body = MyResponse.noAuth("未登录");
     return;

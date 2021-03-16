@@ -12,7 +12,6 @@ export default {
         },
       },
     );
-    console.log('🥸todoListJson', todoListObject.todo_list);
     return todoListObject.todo_list;
   },
   getTodoListNickname: async (nickname: string) => {
